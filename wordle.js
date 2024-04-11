@@ -6,11 +6,11 @@ var dictionary = [ /* 5 letter words, e.g. crane :) */ ];
 // 3. fix issue with same letter being green + gray (done, kind of)
 
 let $ = (selector, el=document) => [].slice.call(el.querySelectorAll(selector));
-let game = $("body > game-app")[0];
 
-function solve(strategy = "depth") {
+function state() {
+	let game = $("body > game-app")[0];
 	let rows = $("#board game-row", game.shadowRoot);
-	let state = rows
+	return rows
 		.map(row => $('game-tile', row.shadowRoot))
 		.map(word => word.map((letter, index) => {
 			return {
@@ -20,7 +20,20 @@ function solve(strategy = "depth") {
 			}        	
 		}))
 		.filter(words => words[0].letter);
+}
 
+// solve(state2('-c-r-a-n+e ~o~l-i-v+e -w-h~o~l+e +l+o-d-g+e'))
+function state2(encoded) {
+	let parser = (word) => {
+		var evaluation = { '-': 'absent', '+': 'correct', '~': 'present' };
+		return word.split(/(..)/g).filter(s => s).map((letter, index) => {
+		    return { index, letter: letter[1], evaluation: evaluation[letter[0]] };
+		});	
+	}
+	return encoded.split(' ').map(parse);
+}
+
+function solve(state, strategy = "depth") {
 	let not = fn => arg => !fn(arg);
 	let getCategory = (evaluation) => state.map(row => row.filter(letter => letter.evaluation == evaluation)).flat();
 	
@@ -60,8 +73,8 @@ function enter(word) {
 }
 
 var options = {
-	depth: solve("depth"),
-	breadth: solve("breadth")
+	depth: solve(state(), "depth"),
+	breadth: solve(state(), "breadth")
 };
 
 console.log("depth", options.depth.length, options.depth);
