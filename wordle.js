@@ -30,7 +30,7 @@ function state2(encoded) {
 		    return { index, letter: letter[1], evaluation: evaluation[letter[0]] };
 		});	
 	}
-	return encoded.split(' ').map(parse);
+	return encoded.split(' ').map(parser);
 }
 
 function solve(state, strategy = "depth") {
